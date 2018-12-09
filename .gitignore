@@ -10,6 +10,7 @@
 # Precompiled Headers
 *.gch
 *.pch
+*.ipch
 
 # Compiled Dynamic libraries
 *.so
@@ -33,5 +34,4 @@
 Debug
 *.suo
 *.db
-/*.opendb
-/SDL-OpenGL - before change
+*.opendb
