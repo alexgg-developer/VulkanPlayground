@@ -39,11 +39,16 @@ private:
 	GLFWwindow* m_window;
 	VkInstance m_vkInstance;
 	VkDebugUtilsMessengerEXT m_callback;
+
 	VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+	VkDevice m_device;
+
+	VkQueue m_graphicsQueue;
 
 	void checkAvailableExtensions();
 	void cleanup();
 	void createInstance();
+	void createLogicalDevice();
 	bool checkValidationLayerSupport();
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	std::vector<const char*> getRequiredExtensions();
