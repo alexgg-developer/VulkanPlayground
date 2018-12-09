@@ -41,18 +41,18 @@ public:
 private:
 	const int WIDTH = 800;
 	const int HEIGHT = 600;
-	const std::vector<const char*> validationLayers = {
+	const std::vector<const char*> VALIDATION_LAYERS = {
 		"VK_LAYER_LUNARG_standard_validation"
 	};
 #ifdef NDEBUG
-	const bool enableValidationLayers = false;
+	const bool b_enableValidationLayers = false;
 #else
-	const bool enableValidationLayers = true;
+	const bool b_enableValidationLayers = true;
 #endif
 
 	GLFWwindow* m_window;
 	VkInstance m_vkInstance;
-	VkDebugUtilsMessengerEXT callback;
+	VkDebugUtilsMessengerEXT m_callback;
 
 	void checkAvailableExtensions();
 	void cleanup();
