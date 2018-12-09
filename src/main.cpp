@@ -11,7 +11,8 @@
 #include "apps\HelloTriangleApplication.h"
 
 
-int main() {
+int main() 
+{
 	HelloTriangleApplication app;
 
 	try {
