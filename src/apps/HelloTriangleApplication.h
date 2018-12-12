@@ -39,7 +39,7 @@ private:
 	const std::vector<const char*> VALIDATION_LAYERS = {
 		"VK_LAYER_LUNARG_standard_validation"
 	};
-	const std::vector<const char*> deviceExtensions = {
+	const std::vector<const char*> DEVICE_EXTENSIONS = {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
 #ifdef NDEBUG
@@ -59,10 +59,10 @@ private:
 	VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
 
-	VkSwapchainKHR swapChain;
-	std::vector<VkImage> swapChainImages;
-	VkFormat swapChainImageFormat;
-	VkExtent2D swapChainExtent;
+	VkSwapchainKHR m_swapChain;
+	std::vector<VkImage> m_swapChainImages;
+	VkFormat m_swapChainImageFormat;
+	VkExtent2D m_swapChainExtent;
 
 	void checkAvailableExtensions();
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
