@@ -74,10 +74,12 @@ private:
 	VkCommandPool m_commandPool;
 	std::vector<VkCommandBuffer> m_commandBuffers;
 
-	std::vector<VkSemaphore> imageAvailableSemaphores;
-	std::vector<VkSemaphore> renderFinishedSemaphores;
-	std::vector<VkFence> inFlightFences;
-	size_t currentFrame = 0;
+	std::vector<VkSemaphore> m_imageAvailableSemaphores;
+	std::vector<VkSemaphore> m_renderFinishedSemaphores;
+	std::vector<VkFence> m_inFlightFences;
+	size_t m_currentFrame = 0;
+
+	bool b_framebufferResized = false;
 
 	void checkAvailableExtensions();
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
@@ -86,6 +88,7 @@ private:
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	void cleanup();
+	void cleanupSwapChain();
 	void createCommandBuffers();
 	void createCommandPool();
 	void createFramebuffers();
@@ -100,6 +103,7 @@ private:
 	void createSyncObjects();
 	void drawFrame();
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+	static void framebufferResizeCallback(GLFWwindow * window, int width, int height);
 	std::vector<const char*> getRequiredExtensions();
 	void initWindow();
 	void initVulkan();
@@ -107,6 +111,7 @@ private:
 	void mainLoop();
 	void pickPhysicalDevice();
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+	void recreateSwapChain();
 	void setupDebugCallback();
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
