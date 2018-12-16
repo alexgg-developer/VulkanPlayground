@@ -65,6 +65,7 @@ private:
 	VkExtent2D m_swapChainExtent;
 	std::vector<VkImageView> m_swapChainImageViews;
 
+	VkRenderPass m_renderPass;
 	VkPipelineLayout m_pipelineLayout;
 
 	void checkAvailableExtensions();
@@ -78,6 +79,7 @@ private:
 	void createImageViews();	
 	void createInstance();
 	void createLogicalDevice();
+	void createRenderPass();
 	VkShaderModule createShaderModule(const std::vector<char>& code);
 	void createSurface();
 	void createSwapChain();
