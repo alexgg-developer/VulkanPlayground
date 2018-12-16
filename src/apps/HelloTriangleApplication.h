@@ -36,6 +36,7 @@ public:
 private:
 	const int WIDTH = 800;
 	const int HEIGHT = 600;
+	const int MAX_FRAMES_IN_FLIGHT = 2;
 	const std::vector<const char*> VALIDATION_LAYERS = {
 		"VK_LAYER_LUNARG_standard_validation"
 	};
@@ -73,6 +74,11 @@ private:
 	VkCommandPool m_commandPool;
 	std::vector<VkCommandBuffer> m_commandBuffers;
 
+	std::vector<VkSemaphore> imageAvailableSemaphores;
+	std::vector<VkSemaphore> renderFinishedSemaphores;
+	std::vector<VkFence> inFlightFences;
+	size_t currentFrame = 0;
+
 	void checkAvailableExtensions();
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 	bool checkValidationLayerSupport();
@@ -91,6 +97,8 @@ private:
 	VkShaderModule createShaderModule(const std::vector<char>& code);
 	void createSurface();
 	void createSwapChain();
+	void createSyncObjects();
+	void drawFrame();
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	std::vector<const char*> getRequiredExtensions();
 	void initWindow();
