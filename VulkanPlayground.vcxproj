@@ -111,7 +111,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>call "$(SolutionDir)shaders\compiler.bat"</Command>
+      <Command>if not exist "$(TargetDir)shaders" mkdir "$(TargetDir)shaders"
+xcopy /E /Y "$(SolutionDir)shaders" "$(TargetDir)shaders"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
