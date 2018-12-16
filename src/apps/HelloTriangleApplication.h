@@ -72,9 +72,11 @@ private:
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	void cleanup();
-	void createImageViews();
+	void createGraphicsPipeline();
+	void createImageViews();	
 	void createInstance();
 	void createLogicalDevice();
+	VkShaderModule createShaderModule(const std::vector<char>& code);
 	void createSurface();
 	void createSwapChain();
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
@@ -87,11 +89,11 @@ private:
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 	void setupDebugCallback();
 
-
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 		VkDebugUtilsMessageTypeFlagsEXT messageType,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData);
+	static std::vector<char> readFile(const std::string & filename);
 };
 
