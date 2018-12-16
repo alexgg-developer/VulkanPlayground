@@ -64,10 +64,14 @@ private:
 	VkFormat m_swapChainImageFormat;
 	VkExtent2D m_swapChainExtent;
 	std::vector<VkImageView> m_swapChainImageViews;
+	std::vector<VkFramebuffer> m_swapChainFramebuffers;
 
 	VkRenderPass m_renderPass;
 	VkPipelineLayout m_pipelineLayout;
 	VkPipeline m_graphicsPipeline;
+	
+	VkCommandPool m_commandPool;
+	std::vector<VkCommandBuffer> m_commandBuffers;
 
 	void checkAvailableExtensions();
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
@@ -76,6 +80,9 @@ private:
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	void cleanup();
+	void createCommandBuffers();
+	void createCommandPool();
+	void createFramebuffers();
 	void createGraphicsPipeline();
 	void createImageViews();	
 	void createInstance();
