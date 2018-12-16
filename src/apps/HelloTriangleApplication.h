@@ -67,6 +67,7 @@ private:
 
 	VkRenderPass m_renderPass;
 	VkPipelineLayout m_pipelineLayout;
+	VkPipeline m_graphicsPipeline;
 
 	void checkAvailableExtensions();
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
