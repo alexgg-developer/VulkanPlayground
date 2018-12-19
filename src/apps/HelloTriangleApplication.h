@@ -3,12 +3,16 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+//#include <glm/glm.hpp>
+
 #include <iostream>
 #include <stdexcept>
 #include <functional>
 #include <cstdlib>
 #include <vector>
 #include <optional>
+
+#include "common/VertexDefinitions.h"
 
 struct QueueFamilyIndices
 {
@@ -21,7 +25,7 @@ struct QueueFamilyIndices
 	}
 };
 
-struct SwapChainSupportDetails 
+struct SwapChainSupportDetails
 {
 	VkSurfaceCapabilitiesKHR capabilities;
 	std::vector<VkSurfaceFormatKHR> formats;
@@ -42,6 +46,11 @@ private:
 	};
 	const std::vector<const char*> DEVICE_EXTENSIONS = {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
+	const std::vector<Vertex> vertices = {
+		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
 	};
 #ifdef NDEBUG
 	const bool b_enableValidationLayers = false;
@@ -70,7 +79,7 @@ private:
 	VkRenderPass m_renderPass;
 	VkPipelineLayout m_pipelineLayout;
 	VkPipeline m_graphicsPipeline;
-	
+
 	VkCommandPool m_commandPool;
 	std::vector<VkCommandBuffer> m_commandBuffers;
 
@@ -93,7 +102,7 @@ private:
 	void createCommandPool();
 	void createFramebuffers();
 	void createGraphicsPipeline();
-	void createImageViews();	
+	void createImageViews();
 	void createInstance();
 	void createLogicalDevice();
 	void createRenderPass();

@@ -21,9 +21,15 @@
     <ClCompile Include="src\apps\HelloTriangleApplication.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\VertexDefinitions.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\apps\HelloTriangleApplication.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\VertexDefinitions.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
