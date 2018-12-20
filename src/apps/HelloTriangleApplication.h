@@ -80,6 +80,9 @@ private:
 	VkPipelineLayout m_pipelineLayout;
 	VkPipeline m_graphicsPipeline;
 
+	VkBuffer m_vertexBuffer;
+	VkDeviceMemory m_vertexBufferMemory;
+
 	VkCommandPool m_commandPool;
 	std::vector<VkCommandBuffer> m_commandBuffers;
 
@@ -110,7 +113,9 @@ private:
 	void createSurface();
 	void createSwapChain();
 	void createSyncObjects();
+	void createVertexBuffer();
 	void drawFrame();
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	static void framebufferResizeCallback(GLFWwindow * window, int width, int height);
 	std::vector<const char*> getRequiredExtensions();
