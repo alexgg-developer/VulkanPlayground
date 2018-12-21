@@ -9,11 +9,13 @@
 #include <iostream>
 
 #include "apps\HelloTriangleApplication.h"
+#include "apps\HelloQuadIndexed.h"
 
 
 int main() 
 {
-	HelloTriangleApplication app;
+	//HelloTriangleApplication app;
+	HelloQuadIndexed app;
 
 	try {
 		app.run();

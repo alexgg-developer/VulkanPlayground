@@ -151,13 +151,18 @@ xcopy /E /Y "$(SolutionDir)shaders" "$(TargetDir)shaders"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\apps\HelloQuadIndexed.cpp" />
     <ClCompile Include="src\apps\HelloTriangleApplication.cpp" />
+    <ClCompile Include="src\common\DebugUtils.cpp" />
     <ClCompile Include="src\common\VertexDefinitions.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\apps\HelloQuadIndexed.h" />
     <ClInclude Include="src\apps\HelloTriangleApplication.h" />
+    <ClInclude Include="src\common\DebugUtils.h" />
     <ClInclude Include="src\common\VertexDefinitions.h" />
+    <ClInclude Include="src\common\VulkanStructs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
