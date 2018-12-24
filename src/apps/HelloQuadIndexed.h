@@ -3,7 +3,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-//#include <glm/glm.hpp>
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
 
 #include <iostream>
 #include <stdexcept>
@@ -17,10 +18,17 @@
 
 class HelloQuadIndexed
 {
+	
 public:
 	void run();
 
 private:
+	struct UniformBufferObject {
+		glm::mat4 model;
+		glm::mat4 view;
+		glm::mat4 proj;
+	};
+
 	const int WIDTH = 800;
 	const int HEIGHT = 600;
 	const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -64,6 +72,7 @@ private:
 	std::vector<VkFramebuffer> m_swapChainFramebuffers;
 
 	VkRenderPass m_renderPass;
+	VkDescriptorSetLayout descriptorSetLayout;
 	VkPipelineLayout m_pipelineLayout;
 	VkPipeline m_graphicsPipeline;
 
@@ -71,6 +80,12 @@ private:
 	VkDeviceMemory m_vertexBufferMemory;
 	VkBuffer m_indexBuffer;
 	VkDeviceMemory m_indexBufferMemory;
+
+	std::vector<VkBuffer> m_uniformBuffers;
+	std::vector<VkDeviceMemory> m_uniformBuffersMemory;
+
+	VkDescriptorPool m_descriptorPool;
+	std::vector<VkDescriptorSet> m_descriptorSets;
 
 	VkCommandPool m_commandPool;
 	std::vector<VkCommandBuffer> m_commandBuffers;
@@ -94,6 +109,9 @@ private:
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer & buffer, VkDeviceMemory & bufferMemory);
 	void createCommandBuffers();
 	void createCommandPool();
+	void createDescriptorPool();
+	void createDescriptorSetLayout();
+	void createDescriptorSets();
 	void createFramebuffers();
 	void createGraphicsPipeline();
 	void createImageViews();
@@ -105,6 +123,8 @@ private:
 	void createSurface();
 	void createSwapChain();
 	void createSyncObjects();
+	void updateUniformBuffer(uint32_t currentImage);
+	void createUniformBuffers();
 	void createVertexBuffer();
 	void drawFrame();
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
