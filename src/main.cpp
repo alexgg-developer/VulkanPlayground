@@ -10,12 +10,14 @@
 
 #include "apps\HelloTriangleApplication.h"
 #include "apps\HelloQuadIndexed.h"
+#include "apps/HelloTexture.h"
 
 
 int main() 
 {
 	//HelloTriangleApplication app;
-	HelloQuadIndexed app;
+	//HelloQuadIndexed app;
+	HelloTexture app;
 
 	try {
 		app.run();
