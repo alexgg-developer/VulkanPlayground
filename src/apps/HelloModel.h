@@ -89,6 +89,7 @@ private:
 	VkCommandPool m_commandPool;
 	std::vector<VkCommandBuffer> m_commandBuffers;
 
+	uint32_t m_mipLevels;
 	VkImage m_textureImage;
 	VkDeviceMemory m_textureImageMemory;
 	VkImageView m_textureImageView;
@@ -125,8 +126,8 @@ private:
 	void createDescriptorSets();
 	void createFramebuffers();
 	void createGraphicsPipeline();
-	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage & image, VkDeviceMemory & imageMemory);
-	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+	void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage & image, VkDeviceMemory & imageMemory);
+	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 	void createImageViews();
 	void createIndexBuffer();
 	void createInstance();
@@ -149,6 +150,7 @@ private:
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 	static void framebufferResizeCallback(GLFWwindow * window, int width, int height);
+	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 	std::vector<const char*> getRequiredExtensions();
 	bool hasStencilComponent(VkFormat format);
 	void initWindow();
@@ -160,7 +162,7 @@ private:
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 	void recreateSwapChain();
 	void setupDebugCallback();
-	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 
 
 
