@@ -1,4 +1,4 @@
-#include "HelloTexture.h"
+#include "HelloModel.h"
 #include "common/DebugUtils.h"
 
 #include <set>
@@ -8,9 +8,13 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+//#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-void HelloTexture::run()
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
+void HelloModel::run()
 {
 	initWindow();
 	initVulkan();
@@ -18,7 +22,7 @@ void HelloTexture::run()
 	cleanup();
 }
 
-void HelloTexture::initWindow()
+void HelloModel::initWindow()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -28,7 +32,7 @@ void HelloTexture::initWindow()
 	glfwSetFramebufferSizeCallback(m_window, framebufferResizeCallback);
 }
 
-void HelloTexture::initVulkan()
+void HelloModel::initVulkan()
 {
 	createInstance();
 	setupDebugCallback();
@@ -46,6 +50,7 @@ void HelloTexture::initVulkan()
 	createTextureImage();
 	createTextureImageView();
 	createTextureSampler();
+	loadModel();
 	createVertexBuffer();
 	createIndexBuffer();
 	createUniformBuffers();
@@ -55,7 +60,7 @@ void HelloTexture::initVulkan()
 	createSyncObjects();
 }
 
-void HelloTexture::mainLoop()
+void HelloModel::mainLoop()
 {
 	while (!glfwWindowShouldClose(m_window)) {
 		glfwPollEvents();
@@ -64,7 +69,7 @@ void HelloTexture::mainLoop()
 	vkDeviceWaitIdle(m_device);
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL HelloTexture::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData, void * pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL HelloModel::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData, void * pUserData)
 {
 
 	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
@@ -72,7 +77,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL HelloTexture::debugCallback(VkDebugUtilsMessageSe
 	return VK_FALSE;
 }
 
-void HelloTexture::createInstance()
+void HelloModel::createInstance()
 {
 	if (b_enableValidationLayers && !checkValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
@@ -109,7 +114,7 @@ void HelloTexture::createInstance()
 	//checkAvailableExtensions();
 }
 
-bool HelloTexture::checkValidationLayerSupport()
+bool HelloModel::checkValidationLayerSupport()
 {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -135,7 +140,7 @@ bool HelloTexture::checkValidationLayerSupport()
 	return true;
 }
 
-void HelloTexture::checkAvailableExtensions()
+void HelloModel::checkAvailableExtensions()
 {
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -148,7 +153,7 @@ void HelloTexture::checkAvailableExtensions()
 	}
 }
 
-void HelloTexture::cleanupSwapChain() 
+void HelloModel::cleanupSwapChain() 
 {
 	vkDestroyImageView(m_device, m_depthImageView, nullptr);
 	vkDestroyImage(m_device, m_depthImage, nullptr);
@@ -166,7 +171,7 @@ void HelloTexture::cleanupSwapChain()
 	vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
 }
 
-void HelloTexture::cleanup()
+void HelloModel::cleanup()
 {
 	cleanupSwapChain();
 
@@ -207,7 +212,7 @@ void HelloTexture::cleanup()
 	glfwTerminate();
 }
 
-std::vector<const char*> HelloTexture::getRequiredExtensions() {
+std::vector<const char*> HelloModel::getRequiredExtensions() {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -221,7 +226,7 @@ std::vector<const char*> HelloTexture::getRequiredExtensions() {
 	return extensions;
 }
 
-void HelloTexture::setupDebugCallback()
+void HelloModel::setupDebugCallback()
 {
 	if (!b_enableValidationLayers) return;
 
@@ -236,7 +241,7 @@ void HelloTexture::setupDebugCallback()
 	}
 }
 
-void HelloTexture::pickPhysicalDevice()
+void HelloModel::pickPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(m_vkInstance, &deviceCount, nullptr);
@@ -260,7 +265,7 @@ void HelloTexture::pickPhysicalDevice()
 	}
 }
 
-bool HelloTexture::isDeviceSuitable(VkPhysicalDevice device) 
+bool HelloModel::isDeviceSuitable(VkPhysicalDevice device) 
 {
 	QueueFamilyIndices indices = findQueueFamilies(device);
 	bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -277,7 +282,7 @@ bool HelloTexture::isDeviceSuitable(VkPhysicalDevice device)
 	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-QueueFamilyIndices HelloTexture::findQueueFamilies(VkPhysicalDevice device)
+QueueFamilyIndices HelloModel::findQueueFamilies(VkPhysicalDevice device)
 {
 	QueueFamilyIndices indices;
 
@@ -310,7 +315,7 @@ QueueFamilyIndices HelloTexture::findQueueFamilies(VkPhysicalDevice device)
 	return indices;
 }
 
-void HelloTexture::createLogicalDevice()
+void HelloModel::createLogicalDevice()
 {
 	QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
 
@@ -355,14 +360,14 @@ void HelloTexture::createLogicalDevice()
 	vkGetDeviceQueue(m_device, indices.presentFamily.value(), 0, &m_presentQueue);
 }
 
-void HelloTexture::createSurface()
+void HelloModel::createSurface()
 {
 	if (glfwCreateWindowSurface(m_vkInstance, m_window, nullptr, &m_surface) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create window surface!");
 	}
 }
 
-bool HelloTexture::checkDeviceExtensionSupport(VkPhysicalDevice device)
+bool HelloModel::checkDeviceExtensionSupport(VkPhysicalDevice device)
 {
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -379,7 +384,7 @@ bool HelloTexture::checkDeviceExtensionSupport(VkPhysicalDevice device)
 	return requiredExtensions.empty();
 }
 
-SwapChainSupportDetails HelloTexture::querySwapChainSupport(VkPhysicalDevice device)
+SwapChainSupportDetails HelloModel::querySwapChainSupport(VkPhysicalDevice device)
 {
 	SwapChainSupportDetails details;
 
@@ -404,7 +409,7 @@ SwapChainSupportDetails HelloTexture::querySwapChainSupport(VkPhysicalDevice dev
 	return details;
 }
 
-VkSurfaceFormatKHR HelloTexture::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR HelloModel::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
 	if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
 		return { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
@@ -419,7 +424,7 @@ VkSurfaceFormatKHR HelloTexture::chooseSwapSurfaceFormat(const std::vector<VkSur
 	return availableFormats[0];
 }
 
-void HelloTexture::createSwapChain()
+void HelloModel::createSwapChain()
 {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_physicalDevice);
 
@@ -474,7 +479,7 @@ void HelloTexture::createSwapChain()
 	m_swapChainExtent = extent;
 }
 
-VkPresentModeKHR HelloTexture::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes)
+VkPresentModeKHR HelloModel::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes)
 {
 	VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
 
@@ -490,7 +495,7 @@ VkPresentModeKHR HelloTexture::chooseSwapPresentMode(const std::vector<VkPresent
 	return bestMode;
 }
 
-VkExtent2D HelloTexture::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+VkExtent2D HelloModel::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 		return capabilities.currentExtent;
@@ -508,7 +513,7 @@ VkExtent2D HelloTexture::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabi
 	}
 }
 
-void HelloTexture::createImageViews()
+void HelloModel::createImageViews()
 {
 	m_swapChainImageViews.resize(m_swapChainImages.size());
 
@@ -517,7 +522,7 @@ void HelloTexture::createImageViews()
 	}
 }
 
-std::vector<char> HelloTexture::readFile(const std::string& filename)
+std::vector<char> HelloModel::readFile(const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -536,7 +541,7 @@ std::vector<char> HelloTexture::readFile(const std::string& filename)
 	return buffer;
 }
 
-void HelloTexture::createGraphicsPipeline()
+void HelloModel::createGraphicsPipeline()
 {
 	auto vertShaderCode = readFile("shaders/compiled/texture_shader_base_vert.spv");
 	auto fragShaderCode = readFile("shaders/compiled/texture_shader_base_frag.spv");
@@ -663,7 +668,7 @@ void HelloTexture::createGraphicsPipeline()
 	vkDestroyShaderModule(m_device, vertShaderModule, nullptr);
 }
 
-VkShaderModule HelloTexture::createShaderModule(const std::vector<char>& code)
+VkShaderModule HelloModel::createShaderModule(const std::vector<char>& code)
 {
 	VkShaderModuleCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -678,7 +683,7 @@ VkShaderModule HelloTexture::createShaderModule(const std::vector<char>& code)
 	return shaderModule;
 }
 
-void HelloTexture::createRenderPass() 
+void HelloModel::createRenderPass() 
 {
 	VkAttachmentDescription depthAttachment = {};
 	depthAttachment.format = findDepthFormat();
@@ -737,7 +742,7 @@ void HelloTexture::createRenderPass()
 	}
 }
 
-void HelloTexture::createFramebuffers()
+void HelloModel::createFramebuffers()
 {
 	m_swapChainFramebuffers.resize(m_swapChainImageViews.size());
 
@@ -762,7 +767,7 @@ void HelloTexture::createFramebuffers()
 	}
 }
 
-void HelloTexture::createCommandPool() 
+void HelloModel::createCommandPool() 
 {
 	QueueFamilyIndices queueFamilyIndices = findQueueFamilies(m_physicalDevice);
 
@@ -775,7 +780,7 @@ void HelloTexture::createCommandPool()
 	}
 }
 
-void HelloTexture::createCommandBuffers()
+void HelloModel::createCommandBuffers()
 {
 	m_commandBuffers.resize(m_swapChainFramebuffers.size());
 
@@ -819,11 +824,11 @@ void HelloTexture::createCommandBuffers()
 		VkBuffer vertexBuffers[] = { m_vertexBuffer };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+		vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdBindDescriptorSets(
 			m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1, &m_descriptorSets[i], 0, nullptr);
-		vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(INDICES.size()), 1, 0, 0, 0);
+		vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(m_commandBuffers[i]);
 
@@ -833,7 +838,7 @@ void HelloTexture::createCommandBuffers()
 	}
 }
 
-void HelloTexture::drawFrame() 
+void HelloModel::drawFrame() 
 {
 	vkWaitForFences(m_device, 1, &m_inFlightFences[m_currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 	
@@ -898,7 +903,7 @@ void HelloTexture::drawFrame()
 	m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void HelloTexture::createSyncObjects()
+void HelloModel::createSyncObjects()
 {
 	m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -920,7 +925,7 @@ void HelloTexture::createSyncObjects()
 	}
 }
 
-void HelloTexture::recreateSwapChain() 
+void HelloModel::recreateSwapChain() 
 {
 	int width = 0, height = 0;
 	while (width == 0 || height == 0) {
@@ -941,15 +946,15 @@ void HelloTexture::recreateSwapChain()
 	createCommandBuffers();
 }
 
-void HelloTexture::framebufferResizeCallback(GLFWwindow* window, int width, int height) 
+void HelloModel::framebufferResizeCallback(GLFWwindow* window, int width, int height) 
 {
-	auto app = reinterpret_cast<HelloTexture*>(glfwGetWindowUserPointer(window));
+	auto app = reinterpret_cast<HelloModel*>(glfwGetWindowUserPointer(window));
 	app->b_framebufferResized = true;
 }
 
-void HelloTexture::createVertexBuffer() 
+void HelloModel::createVertexBuffer() 
 {
-	VkDeviceSize bufferSize = sizeof(VERTICES[0]) * VERTICES.size();
+	VkDeviceSize bufferSize = sizeof(m_vertices[0]) * m_vertices.size();
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
@@ -957,7 +962,7 @@ void HelloTexture::createVertexBuffer()
 
 	void* data;
 	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, VERTICES.data(), (size_t)bufferSize);
+	memcpy(data, m_vertices.data(), (size_t)bufferSize);
 	vkUnmapMemory(m_device, stagingBufferMemory);
 
 	createBuffer(
@@ -972,7 +977,7 @@ void HelloTexture::createVertexBuffer()
 	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
 }
 
-uint32_t HelloTexture::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
+uint32_t HelloModel::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
@@ -986,7 +991,7 @@ uint32_t HelloTexture::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void HelloTexture::createBuffer(
+void HelloModel::createBuffer(
 	VkDeviceSize size, 
 	VkBufferUsageFlags usage, 
 	VkMemoryPropertyFlags properties, 
@@ -1018,7 +1023,7 @@ void HelloTexture::createBuffer(
 	vkBindBufferMemory(m_device, buffer, bufferMemory, 0);
 }
 
-void HelloTexture::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void HelloModel::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -1029,9 +1034,9 @@ void HelloTexture::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSi
 	endSingleTimeCommands(commandBuffer);
 }
 
-void HelloTexture::createIndexBuffer()
+void HelloModel::createIndexBuffer()
 {
-	VkDeviceSize bufferSize = sizeof(INDICES[0]) * INDICES.size();
+	VkDeviceSize bufferSize = sizeof(m_indices[0]) * m_indices.size();
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
@@ -1039,7 +1044,7 @@ void HelloTexture::createIndexBuffer()
 
 	void* data;
 	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, INDICES.data(), (size_t)bufferSize);
+	memcpy(data, m_indices.data(), (size_t)bufferSize);
 	vkUnmapMemory(m_device, stagingBufferMemory);
 
 	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_indexBuffer, m_indexBufferMemory);
@@ -1050,7 +1055,7 @@ void HelloTexture::createIndexBuffer()
 	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
 }
 
-void HelloTexture::createDescriptorSetLayout()
+void HelloModel::createDescriptorSetLayout()
 {
 	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 	uboLayoutBinding.binding = 0;
@@ -1077,7 +1082,7 @@ void HelloTexture::createDescriptorSetLayout()
 	}
 }
 
-void HelloTexture::createUniformBuffers() 
+void HelloModel::createUniformBuffers() 
 {
 	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
@@ -1094,7 +1099,7 @@ void HelloTexture::createUniformBuffers()
 	}
 }
 
-void HelloTexture::updateUniformBuffer(uint32_t currentImage) 
+void HelloModel::updateUniformBuffer(uint32_t currentImage) 
 {
 	static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -1114,7 +1119,7 @@ void HelloTexture::updateUniformBuffer(uint32_t currentImage)
 }
 
 
-void HelloTexture::createDescriptorPool()
+void HelloModel::createDescriptorPool()
 {
 
 	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
@@ -1134,7 +1139,7 @@ void HelloTexture::createDescriptorPool()
 	}
 }
 
-void HelloTexture::createDescriptorSets() 
+void HelloModel::createDescriptorSets() 
 {
 	std::vector<VkDescriptorSetLayout> layouts(m_swapChainImages.size(), descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
@@ -1181,10 +1186,10 @@ void HelloTexture::createDescriptorSets()
 	}
 }
 
-void HelloTexture::createTextureImage() 
+void HelloModel::createTextureImage() 
 {
 	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 	if (!pixels) {
@@ -1224,7 +1229,7 @@ void HelloTexture::createTextureImage()
 	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
 }
 
-void HelloTexture::createImage(
+void HelloModel::createImage(
 	uint32_t width,
 	uint32_t height,
 	VkFormat format,
@@ -1268,7 +1273,7 @@ void HelloTexture::createImage(
 	vkBindImageMemory(m_device, image, imageMemory, 0);
 }
 
-void HelloTexture::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+void HelloModel::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
 	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -1337,7 +1342,7 @@ void HelloTexture::transitionImageLayout(VkImage image, VkFormat format, VkImage
 	endSingleTimeCommands(commandBuffer);
 }
 
-VkCommandBuffer HelloTexture::beginSingleTimeCommands()
+VkCommandBuffer HelloModel::beginSingleTimeCommands()
 {
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -1357,7 +1362,7 @@ VkCommandBuffer HelloTexture::beginSingleTimeCommands()
 	return commandBuffer;
 }
 
-void HelloTexture::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+void HelloModel::endSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
 	vkEndCommandBuffer(commandBuffer);
 
@@ -1372,7 +1377,7 @@ void HelloTexture::endSingleTimeCommands(VkCommandBuffer commandBuffer)
 	vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
 }
 
-void HelloTexture::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) 
+void HelloModel::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) 
 {
 	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -1396,12 +1401,12 @@ void HelloTexture::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t wi
 	endSingleTimeCommands(commandBuffer);
 }
 
-void HelloTexture::createTextureImageView()
+void HelloModel::createTextureImageView()
 {
 	m_textureImageView = createImageView(m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
-VkImageView HelloTexture::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
+VkImageView HelloModel::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
 {
 	VkImageViewCreateInfo viewInfo = {};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -1422,7 +1427,7 @@ VkImageView HelloTexture::createImageView(VkImage image, VkFormat format, VkImag
 	return imageView;
 }
 
-void HelloTexture::createTextureSampler() 
+void HelloModel::createTextureSampler() 
 {
 	VkSamplerCreateInfo samplerInfo = {};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -1445,7 +1450,7 @@ void HelloTexture::createTextureSampler()
 }
 
 
-void HelloTexture::createDepthResources() 
+void HelloModel::createDepthResources() 
 {
 	VkFormat depthFormat = findDepthFormat();
 
@@ -1463,7 +1468,7 @@ void HelloTexture::createDepthResources()
 	transitionImageLayout(m_depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
 
-VkFormat HelloTexture::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+VkFormat HelloModel::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 {
 	for (VkFormat format : candidates) {
 		VkFormatProperties props;
@@ -1480,7 +1485,7 @@ VkFormat HelloTexture::findSupportedFormat(const std::vector<VkFormat>& candidat
 	throw std::runtime_error("failed to find supported format!");
 }
 
-VkFormat HelloTexture::findDepthFormat() 
+VkFormat HelloModel::findDepthFormat() 
 {
 	return findSupportedFormat(
 		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -1489,7 +1494,47 @@ VkFormat HelloTexture::findDepthFormat()
 	);
 }
 
-bool HelloTexture::hasStencilComponent(VkFormat format) 
+bool HelloModel::hasStencilComponent(VkFormat format) 
 {
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+}
+
+void HelloModel::loadModel() 
+{
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+		throw std::runtime_error(warn + err);
+	}
+
+	std::unordered_map<TexturedVertex, uint32_t> uniqueVertices = {};
+
+	for (const auto& shape : shapes) {
+		for (const auto& index : shape.mesh.indices) {
+			TexturedVertex vertex = {};
+
+			vertex.pos = {
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2]
+			};
+
+			vertex.texCoord = {
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+			};
+
+			vertex.color = { 1.0f, 1.0f, 1.0f };
+
+			if (uniqueVertices.count(vertex) == 0) {
+				uniqueVertices[vertex] = static_cast<uint32_t>(m_vertices.size());
+				m_vertices.push_back(vertex);
+			}
+
+			m_indices.push_back(uniqueVertices[vertex]);
+		}
+	}
 }

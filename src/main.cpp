@@ -8,16 +8,23 @@
 
 #include <iostream>
 
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#undef STB_IMAGE_IMPLEMENTATION
+
 #include "apps\HelloTriangleApplication.h"
 #include "apps\HelloQuadIndexed.h"
 #include "apps/HelloTexture.h"
+#include "apps/HelloModel.h"
 
 
 int main() 
 {
 	//HelloTriangleApplication app;
 	//HelloQuadIndexed app;
-	HelloTexture app;
+	//HelloTexture app;
+	HelloModel app;
 
 	try {
 		app.run();

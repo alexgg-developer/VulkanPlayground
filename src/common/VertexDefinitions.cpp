@@ -58,3 +58,9 @@ std::array<VkVertexInputAttributeDescription, 3> TexturedVertex::getAttributeDes
 
 	return attributeDescriptions;
 }
+
+
+bool TexturedVertex::operator==(const TexturedVertex& other) const 
+{
+	return pos == other.pos && color == other.color && texCoord == other.texCoord;
+}

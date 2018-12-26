@@ -68,6 +68,7 @@
     <Import Project="GLM.props" />
     <Import Project="GLFW.props" />
     <Import Project="stb.props" />
+    <Import Project="tinyobjloader.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -152,6 +153,7 @@ xcopy /E /Y "$(SolutionDir)shaders" "$(TargetDir)shaders"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\apps\HelloModel.cpp" />
     <ClCompile Include="src\apps\HelloQuadIndexed.cpp" />
     <ClCompile Include="src\apps\HelloTexture.cpp" />
     <ClCompile Include="src\apps\HelloTriangleApplication.cpp" />
@@ -161,6 +163,7 @@ xcopy /E /Y "$(SolutionDir)shaders" "$(TargetDir)shaders"</Command>
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\apps\HelloModel.h" />
     <ClInclude Include="src\apps\HelloQuadIndexed.h" />
     <ClInclude Include="src\apps\HelloTexture.h" />
     <ClInclude Include="src\apps\HelloTriangleApplication.h" />
