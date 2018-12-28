@@ -58,6 +58,7 @@ private:
 	VkDebugUtilsMessengerEXT m_callback;
 
 	VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+	VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 	VkDevice m_device;
 	VkSurfaceKHR m_surface;
 
